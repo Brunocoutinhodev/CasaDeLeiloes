@@ -24,39 +24,53 @@ public class ProdutosDAO {
     
    public void cadastrarProduto (ProdutosDTO produto){
         
-        // 1. Abre a conexão usando a sua classe conectaDAO
+        
         conn = new conectaDAO().connectDB();
         
-        // 2. Prepara o comando SQL de inserção
+        
         String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
         
         try {
             prep = conn.prepareStatement(sql);
             
-            // 3. Pega os valores do objeto DTO e coloca no comando SQL
             prep.setString(1, produto.getNome());
             prep.setInt(2, produto.getValor()); 
             prep.setString(3, produto.getStatus());
             
-            // 4. Executa o comando no banco de dados
             prep.executeUpdate();
             
-            // 5. Exibe a mensagem de sucesso (Exigência da atividade!)
             JOptionPane.showMessageDialog(null, "Produto cadastrado com sucesso!");
             
         } catch (Exception e) {
-            // Se algo der errado (ex: banco desligado), exibe o erro
             JOptionPane.showMessageDialog(null, "Erro ao cadastrar produto: " + e.getMessage());
         }
     }
     
-    public ArrayList<ProdutosDTO> listarProdutos(){
+   public ArrayList<ProdutosDTO> listarProdutos(){
+        listagem.clear(); 
+        
+        conn = new conectaDAO().connectDB();
+        
+        String sql = "SELECT * FROM produtos";
+        
+        try {
+            prep = conn.prepareStatement(sql);
+            resultset = prep.executeQuery();
+            
+            while (resultset.next()) {
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(resultset.getInt("id"));
+                produto.setNome(resultset.getString("nome"));
+                produto.setValor(resultset.getInt("valor"));
+                produto.setStatus(resultset.getString("status"));
+                
+                listagem.add(produto);
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar produtos: " + e.getMessage());
+        }
         
         return listagem;
     }
-    
-    
-    
-        
 }
-
